@@ -1,0 +1,184 @@
+Resumen
+
+-Crear carpeta
+-Mover a varpeta
+-html a php
+-style.css 
+-funcions.php
+
+-Crear header/footer.php
+-Trocear
+-wp-head y wp_content
+-Refinar header
+-Añadir funcionalidades de functions.php
+
+-menus
+-Sidebars
+
+-Loop y paginas especiales
+
+
+
+Se puede tener antes un template con archivos vacios index functions y style.css y carpetas CSS y IMG
+
+EN MI ORDENADOR
+-pongo codigo html y lo que tenga de css e imagenes en la carpeta httdocs/wordpress/wp_content/themes/(una carpeta que cree ahi)
+
+-cambiar index.html a index.php
+
+-crear styles.css en mi raiz y poner comentado:
+
+/*
+Theme Name:         Solartec
+Theme URI:          Fco Palacios Chaves
+Author:             Mystery Themes
+Author URI:         https://mysterythemes.com/
+Description:        bla bla bla
+Version:            1.4.7
+*/
+
+-Hacer que lea el css: en el index agregar funcion de wp a la conexion con el css
+<link href="<?php echo get_template_directory_uri();?>/css/style.css" rel="stylesheet">
+
+-agregar <?php echo get_template_directory_uri();?>/ tambien a las imagenes
+
+-SEPARAR HEADER Y FOOTER
+identificar partes de la web. crear archivos header.php y footer.php cortar inicio y final del index y teemplazarlos por <?php get_header();?> y <?php get_footer();?> de donde saque ese cacho de codigo (se lleva a header.php y footer.php desde el inicio hasta el final, hasta las etiquetas de html)
+
+
+
+EN EL HEADER
+
+-Cambiar lenguaje:
+<html <?php language_attributes(); ?>>
+
+-Cambiar charset:
+<meta charset="<?php bloginfo( 'charset' ); ?>">
+
+-Cambiar title:
+<title><?php bloginfo( 'name' ); ?></title>
+
+
+
+EN EL BODY
+
+- <body <?php body_class(); ?>>
+
+cambiar el titulo escrito por <?php bloginfo( 'name' ); ?>
+y la descripcion por <?php bloginfo( 'description' ); ?>
+Se pone lo que pusiste como titulo del sitio y descripcion del sitio en el administrador (ajustes/generales)
+
+agregar <?php echo get_template_directory_uri(); ?>/ al favicon
+
+EN EL HEAD
+añadir el wp_head
+<?php wp_head() ?> ponerlo antes de todas las hojas de estilo
+
+EN EL FOOTER
+<?php wp_footer() ?> antes de cerrar el body, dsp de los scripts
+
+MENU (convertirlo en dinamico)
+-crear archivo functions.php (se tiene que llamar asi) y ponerle:
+
+<?php
+
+add_theme_support("post-thumbnails");
+add_theme_support("menus");
+add_theme_support("widgets");
+
+?>
+Creo menu en el administrador
+- voy a apariencia-menus-enlaces personalizados y poner la url /nombre y "nombre" de los que intems que tengo en el menu 
+
+-comento el menu que tengo y lo reemplazo por:
+            <?php
+            $argumentos = [
+                "menu" => "Menú Principal",
+                "container_class" => "navbar-nav ms-auto p-4 p-lg-0", tenga )
+                "container" => "div",
+            ];
+            wp_nav_menu($argumentos);
+            
+            ?>
+
+-----Aca estoy haciendo que lea el menu que puse desde en administrador de wordpress y no el que tengo puesto. y replico el estilo aca replico el estilo pasandole container_class o container_id, dependiendo lo que tenga de entrada su contenedor                                                               
+
+
+
+
+LOOPS cambiar items que se repitan por un loop de wordpress.
+-comento todos menos uno que me va a quedar de ejemplo
+-antes de ese pongo el loop:
+
+<?php
+
+if ( have_posts() ) :
+        while ( have_posts() ) : the_post(); ?>
+
+        <?php endwhile;
+
+else :
+        echo '<p>There are no posts!</p>';
+
+endif;
+
+?>
+
+Poner el que me quedo de ejemplo debajo del while 
+
+(WP_Query() para pintar por categoria) ver documentacion de wp
+
+
+De ese ejemplo reeemplazar el titulo que este puesto asi nomas por title de wordpress: <?php the_title() ?>
+
+
+categorias - admin se toca en entradas - categorias y se suben. dsp se coloca cada categoria en cada entrada <?php the_category(" - ") ?> separa por lo que le pongas, si no pone nada los muestra como elementos de una lista. pone el nombre de la categoria y genera el enlace a la categoria correspondientes.
+
+imagenes - se suben en biblioteca de medios y se van seleccionando las imagenes destacadas de cada entrada.
+<?php the_post_thumbnail(); ?>
+
+the_post_thumbnail(); puede llevar dos parametros
+
+1 tamaño se peude ver en administracion ajustes-medios: miniatura "thumbnail", medium "medium", grande "large" si no le pongo nada coge el tamaño original de la imagen.
+
+2 array al que le puedo poner distintos parametros ["class" => "img-fluid"]
+
+<?php the_post_thumbnail("medium", ["class" => "img-fluid"]); ?>
+
+
+LINKS
+href="<?php the_permalink(); ?>" devuelve  a url del poste en concreto
+
+SINGULAR post
+
+creo un nuevo archivo llamado singular.php y copio todo el index. borro todo lo que no necesito ene sa pagina.
+en el loop quito la card que tenia y pongo lo que esta fuera. tengoq ue usar el loop porque las funciones title category etc solo funcionan dentro del loop. 
+entonces cambio todo lo que necesito por the title , the category etc y agrego una descripcion
+
+CATEGORIAS 
+category.php copio el index y borro lo que no quiero que se vea cuando entro a cada categoria
+
+cuando creo categorias en el admin, wp me crea un slug por categoria y puedo ponerlo en un archivo y poner ahi como se mostrara esa categoria
+
+SIDEBARS
+poner esta funcion en funciones.php
+
+function registrar_sidebar(){
+  register_sidebar(array(
+   'name' => 'Sidebar de ejemplo',
+   'id' => 'sidebar-ejemplo',
+   'description' => 'Descripción de ejemplo',
+   'class' => 'sidebar',
+   'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+   'after_widget' => '</aside>',
+   'before_title' => '<h2 class="widget-title">',
+   'after_title' => '</h2>',
+  ));
+}
+add_action( 'widgets_init', 'registrar_sidebar');
+Luego la incluimos en nuestra página
+<?php if ( is_active_sidebar( 'sidebar-ejemplo' ) ) : ?>
+         <div id="widget-area" class="widget-area">
+            <?php dynamic_sidebar( 'sidebar-ejemplo' ); ?>
+         </div>
+<?php endif; ?>
