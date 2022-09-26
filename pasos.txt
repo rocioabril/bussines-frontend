@@ -147,7 +147,7 @@ the_post_thumbnail(); puede llevar dos parametros
 
 
 LINKS
-href="<?php the_permalink(); ?>" devuelve  a url del poste en concreto
+href="<?php the_permalink(); ?>" devuelve  a url del post en concreto
 
 SINGULAR post
 
@@ -176,9 +176,17 @@ function registrar_sidebar(){
   ));
 }
 add_action( 'widgets_init', 'registrar_sidebar');
+
+
 Luego la incluimos en nuestra página
 <?php if ( is_active_sidebar( 'sidebar-ejemplo' ) ) : ?>
          <div id="widget-area" class="widget-area">
             <?php dynamic_sidebar( 'sidebar-ejemplo' ); ?>
          </div>
 <?php endif; ?>
+
+
+
+
+
+
